@@ -54,6 +54,13 @@ def test_sort_rows_missing_key():
         sort_rows(ROWS, keys=["nonexistent"])
 
 
+def test_sort_rows_does_not_mutate_input():
+    """Ensure sort_rows returns a new list and does not modify the original."""
+    original = list(ROWS)  # shallow copy of the list
+    sort_rows(ROWS, keys=["name"])
+    assert ROWS == original
+
+
 def _write_csv(rows, fieldnames, delimiter=","):
     tmp = tempfile.NamedTemporaryFile(
         mode="w", suffix=".csv", delete=False, newline="", encoding="utf-8"
