@@ -39,6 +39,23 @@ def rename_columns(rows: List[Dict], mapping: Dict[str, str]) -> List[Dict]:
     return result
 
 
+def add_column(rows: List[Dict], column: str, value: str, overwrite: bool = False) -> List[Dict]:
+    """Return rows with a new column set to a constant value.
+
+    Args:
+        rows: List of row dicts to update.
+        column: Name of the new column to add.
+        value: Constant value to assign to every row.
+        overwrite: If False (default), raise ValueError if column already exists.
+
+    Returns:
+        List of row dicts with the new column included.
+    """
+    if not overwrite and rows and column in rows[0]:
+        raise ValueError(f"Column '{column}' already exists. Use overwrite=True to replace it.")
+    return [{**row, column: value} for row in rows]
+
+
 def transform_file(
     input_path: str,
     output_path: str,
