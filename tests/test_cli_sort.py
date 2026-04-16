@@ -58,6 +58,22 @@ def test_run_sort_success(capsys):
             os.unlink(dst)
 
 
+def test_run_sort_reverse(capsys):
+    """Sorting with reverse=True should place the last alphabetical entry first."""
+    src = _write_csv(ROWS, ["name", "score"])
+    dst = src + ".sorted.csv"
+    try:
+        args = _make_args(input=src, output=dst, keys=["name"], reverse=True)
+        run_sort(args)
+        with open(dst, newline="", encoding="utf-8") as fh:
+            result = list(csv.DictReader(fh))
+        assert result[0]["name"] == "Zara"
+    finally:
+        os.unlink(src)
+        if os.path.exists(dst):
+            os.unlink(dst)
+
+
 def test_run_sort_bad_key_exits(capsys):
     src = _write_csv(ROWS, ["name", "score"])
     dst = src + ".sorted.csv"
