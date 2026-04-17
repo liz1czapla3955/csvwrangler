@@ -50,8 +50,19 @@ def sample_file(
 ) -> int:
     """Sample rows from a CSV file and write to output.
 
+    Args:
+        input_path: Path to the input CSV file.
+        output_path: Path to write the sampled CSV output.
+        n: Number of rows to sample.
+        mode: Sampling mode — 'random', 'first', or 'last'.
+        seed: Optional random seed for reproducibility.
+
     Returns:
         Number of rows written.
+
+    Raises:
+        FileNotFoundError: If input_path does not exist.
+        ValueError: Propagated from sample_rows for invalid arguments.
     """
     with open(input_path, newline="", encoding="utf-8") as fh:
         reader = csv.DictReader(fh)
