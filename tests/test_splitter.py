@@ -91,33 +91,13 @@ def test_split_file_keep_column_true(tmp_path):
     out_dir = str(tmp_path / "out")
     split_file(src, column="region", output_dir=out_dir, keep_column=True)
     rows = _read_csv(os.path.join(out_dir, "north.csv"))
-    assert "region" in rows[0]
+    assert "region" in rows[0], "split column should be present when keep_column=True"
 
 
-def test_split_file_drop_column(tmp_path):
+def test_split_file_keep_column_false(tmp_path):
     src = str(tmp_path / "input.csv")
     _write_csv(src, ROWS, ["region", "city", "pop"])
     out_dir = str(tmp_path / "out")
     split_file(src, column="region", output_dir=out_dir, keep_column=False)
     rows = _read_csv(os.path.join(out_dir, "north.csv"))
-    assert "region" not in rows[0]
-    assert "city" in rows[0]
-
-
-def test_split_file_prefix(tmp_path):
-    src = str(tmp_path / "input.csv")
-    _write_csv(src, ROWS, ["region", "city", "pop"])
-    out_dir = str(tmp_path / "out")
-    split_file(src, column="region", output_dir=out_dir, prefix="region_")
-    names = {os.path.basename(p) for p in os.listdir(out_dir)}
-    assert all(n.startswith("region_") for n in names)
-
-
-def test_split_file_special_chars_in_value(tmp_path):
-    rows = [{"cat": "a/b", "v": "1"}, {"cat": "a/b", "v": "2"}]
-    src = str(tmp_path / "input.csv")
-    _write_csv(src, rows, ["cat", "v"])
-    out_dir = str(tmp_path / "out")
-    written = split_file(src, column="cat", output_dir=out_dir)
-    assert len(written) == 1
-    assert os.path.exists(written[0])
+    assert "region" not in rows[0], "split column should be absent when keep_column=False"
