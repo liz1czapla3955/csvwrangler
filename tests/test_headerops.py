@@ -45,6 +45,12 @@ def test_drop_columns_nonexistent_ignored():
     assert result[0] == ROWS[0]
 
 
+def test_drop_columns_all_columns():
+    result = list(drop_columns(ROWS, ["a", "b", "c"]))
+    assert result[0] == {}
+    assert result[1] == {}
+
+
 def test_insert_column_end():
     result = list(insert_column(ROWS, "d", "x"))
     assert list(result[0].keys())[-1] == "d"
