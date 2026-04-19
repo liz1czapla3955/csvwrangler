@@ -69,3 +69,37 @@ def flatten_file(
         writer = csv.DictWriter(fh, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(filled)
+
+
+def flatten_string(
+    content: str,
+    columns: Optional[List[str]] = None,
+) -> str:
+    """Fill down empty cells in a CSV string and return the result as a string.
+
+    Useful for in-memory processing without touching the filesystem.
+
+    Args:
+        content: CSV content as a string.
+        columns: Column names to fill down. If None, fill all columns.
+
+    Returns:
+        CSV content with empty cells filled, as a string.
+    """
+    reader = csv.DictReader(io.StringIO(content))
+    fieldnames = reader.fieldnames
+    if not fieldnames:
+        raise ValueError("Input CSV has no header row.")
+
+    if columns:
+        missing = [c for c in columns if c not in fieldnames]
+        if missing:
+            raise ValueError(f"Columns not found in CSV: {missing}")
+
+    filled = fill_down_rows(list(reader), columns)
+
+    out = io.StringIO()
+    writer = csv.DictWriter(out, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(filled)
+    return out.getvalue()
