@@ -38,6 +38,21 @@ def insert_column(
         yield dict(items)
 
 
+def rename_column(rows: Iterable[dict], old_name: str, new_name: str) -> Iterator[dict]:
+    """Yield rows with a single column renamed.
+
+    Raises ValueError if old_name is not found in the first row.
+    Columns not present in a given row are silently skipped.
+    """
+    rows = list(rows)
+    if not rows:
+        return
+    if old_name not in rows[0]:
+        raise ValueError(f"Column {old_name!r} not found in headers.")
+    for row in rows:
+        yield {(new_name if k == old_name else k): v for k, v in row.items()}
+
+
 def headerops_file(
     reader,
     writer,
@@ -46,6 +61,8 @@ def headerops_file(
     insert_name: str | None = None,
     insert_value: str = "",
     insert_position: int = -1,
+    rename_old: str | None = None,
+    rename_new: str | None = None,
 ) -> None:
     rows = list(reader)
     if operation == "reorder":
@@ -54,6 +71,8 @@ def headerops_file(
         result = drop_columns(rows, columns or [])
     elif operation == "insert":
         result = insert_column(rows, insert_name or "new", insert_value, insert_position)
+    elif operation == "rename":
+        result = rename_column(rows, rename_old or "", rename_new or "")
     else:
         raise ValueError(f"Unknown headerops operation: {operation!r}")
     for row in result:
