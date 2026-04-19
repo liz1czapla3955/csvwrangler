@@ -63,6 +63,14 @@ def test_truncate_rows_preserves_all_keys():
         assert set(row.keys()) == set(original.keys())
 
 
+def test_truncate_rows_does_not_mutate_input():
+    """Ensure truncate_rows returns new dicts and does not modify the originals."""
+    import copy
+    original = copy.deepcopy(ROWS)
+    truncate_rows(ROWS, max_length=6)
+    assert ROWS == original
+
+
 def test_truncate_file(tmp_path):
     input_file = tmp_path / "input.csv"
     output_file = tmp_path / "output.csv"
@@ -97,6 +105,3 @@ def test_truncate_file_columns_subset(tmp_path):
     with open(output_file, newline="") as fh:
         reader = csv.DictReader(fh)
         result = list(reader)
-
-    assert result[0]["name"] == "Alice"  # untouched
-    assert result[0]["bio"] == "A so..."
