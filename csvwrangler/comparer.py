@@ -3,7 +3,11 @@ from typing import Iterator
 
 
 def _compare(a: str, b: str, op: str) -> bool:
-    """Compare two string values using the given operator."""
+    """Compare two string values using the given operator.
+
+    Attempts numeric comparison first; falls back to string comparison
+    for equality operators. Raises ValueError for unsupported operators.
+    """
     try:
         fa, fb = float(a), float(b)
         if op == "eq": return fa == fb
@@ -15,6 +19,10 @@ def _compare(a: str, b: str, op: str) -> bool:
     except (ValueError, TypeError):
         if op == "eq": return a == b
         if op == "ne": return a != b
+        if op in ("lt", "le", "gt", "ge"):
+            raise ValueError(
+                f"Operator '{op}' requires numeric values, but got: {a!r}, {b!r}"
+            )
     raise ValueError(f"Unsupported operator: {op}")
 
 
