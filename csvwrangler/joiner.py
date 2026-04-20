@@ -14,9 +14,23 @@ def join_rows(
 
     Supports 'inner', 'left', and 'right' join types.
     Columns from side that share a name with the left (excluding the
-    key) are suff"""
+    key) are suffixed with '_right' to avoid collisions.
+
+    Args:
+        left_rows: List of dicts representing the left table.
+        right_rows: List of dicts representing the right table.
+        key: The column name to join on (must exist in both tables).
+        how: Join type — one of 'inner', 'left', or 'right'.
+
+    Returns:
+        A list of merged row dicts.
+
+    Raises:
+        ValueError: If `how` is not a supported join type.
+        KeyError: If `key` is not present in any row of either table.
+    """
     if how not in ("inner", "left", "right"):
-        raise ValueError(f"Unsupported join type: {how!r}. Use or 'right'.")
+        raise ValueError(f"Unsupported join type: {how!r}. Use 'inner', 'left', or 'right'.")
 
     right_index: dict[str, list[dict]] = {}
     for row in right_rows:
