@@ -35,6 +35,15 @@ def test_rank_standard_ascending():
     assert ranks["Alice"] == ranks["Carol"] == "3"
 
 
+def test_rank_standard_descending():
+    result = rank_rows(ROWS, "score", method="standard", ascending=False)
+    ranks = {r["name"]: r["rank"] for r in result}
+    # Alice and Carol both get rank 1, next would be 3 (skipped 2)
+    assert ranks["Alice"] == ranks["Carol"] == "1"
+    assert ranks["Bob"] == "3"
+    assert ranks["Dave"] == "4"
+
+
 def test_rank_row_method_unique():
     result = rank_rows(ROWS, "score", method="row", ascending=False)
     rank_values = [r["rank"] for r in result]
