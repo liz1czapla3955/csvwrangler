@@ -45,3 +45,21 @@ def test_rolling_file_max():
     rolling_file(_make_reader(rows), writer, column="v", window=3, agg="max")
     assert writer.rows[2]["v_rolling_max"] == "4"
     assert writer.rows[4]["v_rolling_max"] == "5"
+
+
+def test_rolling_file_min():
+    rows = [{"v": str(i)} for i in [3, 1, 4, 1, 5]]
+    writer = ListWriter()
+    rolling_file(_make_reader(rows), writer, column="v", window=3, agg="min")
+    assert writer.rows[2]["v_rolling_min"] == "1"
+    assert writer.rows[4]["v_rolling_min"] == "1"
+
+
+def test_rolling_file_preserves_other_columns():
+    """Ensure that columns other than the rolling output are preserved unchanged."""
+    rows = [{"x": str(i), "v": str(i * 2)} for i in range(1, 4)]
+    writer = ListWriter()
+    rolling_file(_make_reader(rows), writer, column="v", window=2, agg="mean")
+    assert writer.rows[0]["x"] == "1"
+    assert writer.rows[1]["x"] == "2"
+    assert writer.rows[2]["x"] == "3"
